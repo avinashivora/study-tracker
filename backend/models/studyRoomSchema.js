@@ -1,28 +1,88 @@
 const mongoose = require("mongoose");
 
 const studyRoomSchema = new mongoose.Schema({
-  roomType: {
+  privacy: {
+    type: String,
+    enum: ["public", "private"],
+    default: "private"
+  },
+  attendees: [{
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User"
+    },
+    userName: {
+      type: String
+    },
+    status: {
+      type: String,
+      enum: ["active", "inactive"],
+      default: "active"
+    }
+  }],
+  roomName: {
+    type: String,
+    required: false
+  },
+  roomCode: {
     type: String,
     required: true,
-    default : "private"
+    unique: true
   },
-  roomName : {
-    type : String,
-    required : false
+  createdOn: {
+    type: Date,
+    default: Date.now
   },
-  roomCode : {
+  roomOwner: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true
+  },
+  isOpen: {
+    type: Boolean,
+    default: false
+  },
+  capacity: {
+    type: Number,
+    required: true,
+    default: 10 // can be increased by the user
+  },
+  chatLink: {
     type: String,
-    required : true,
-    unique : true
+    required: true
   },
-  createdOn : {
-    type : new Date,
-    required : true
+  messages: [{
+    sender: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User"
+    },
+    content: {
+      type: String,
+      required: true
+    },
+    timestamp: {
+      type: Date,
+      default: Date.now
+    }
+  }],
+  expiresAt: {
+    type: Date
   },
-  roomOwner : {
-    ref : 'User',
-    required : true
-  }
+  joinLogs: [{
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User"
+    },
+    joinedAt: {
+      type: Date,
+      default: Date.now
+    },
+    leftAt: {
+      type: Date
+    }
+  }]
 });
+
+studyRoomSchema.index({ roomCode: 1 });
 
 module.exports = mongoose.model("study_room", studyRoomSchema);
