@@ -22,7 +22,8 @@ const studyRoomSchema = new mongoose.Schema({
   roomOwner : {
     ref : 'User',
     required : true
-  }
+  },
+  
 });
 
 module.exports = mongoose.model("study_room", studyRoomSchema);
